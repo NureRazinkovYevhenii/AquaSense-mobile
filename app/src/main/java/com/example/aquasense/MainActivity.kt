@@ -67,21 +67,18 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    // Функция для форматирования времени последнего кормления
     private fun formatLastFeedTime(lastFeedTime: String): String {
         return try {
             val dateTime = try {
-                // Попытка распарсить входную строку как ZonedDateTime (если содержит зону)
                 java.time.ZonedDateTime.parse(lastFeedTime)
             } catch (e: Exception) {
-                // Если не получается, пробуем распарсить как LocalDateTime
                 java.time.LocalDateTime.parse(lastFeedTime, java.time.format.DateTimeFormatter.ISO_LOCAL_DATE_TIME)
                     .atZone(java.time.ZoneId.systemDefault())
             }
             val formatter = java.time.format.DateTimeFormatter.ofPattern("dd MMM, HH:mm")
             dateTime.format(formatter)
         } catch (e: Exception) {
-            lastFeedTime // Если что-то пойдёт не так, возвращаем исходную строку
+            lastFeedTime
         }
     }
 
@@ -92,7 +89,6 @@ class MainActivity : ComponentActivity() {
         var isLoading by remember { mutableStateOf(true) }
         var errorMessage by remember { mutableStateOf<String?>(null) }
 
-        // Первоначальная загрузка данных
         LaunchedEffect(Unit) {
             loadAquariums(
                 onSuccess = { result ->
@@ -122,7 +118,6 @@ class MainActivity : ComponentActivity() {
             }
         }
 
-        // Обновляем данные при возвращении к MainActivity (onResume)
         val lifecycleOwner = LocalLifecycleOwner.current
         DisposableEffect(lifecycleOwner) {
             val observer = LifecycleEventObserver { _, event ->
@@ -234,12 +229,10 @@ class MainActivity : ComponentActivity() {
         onToggleLight: () -> Unit
     ) {
         val context = androidx.compose.ui.platform.LocalContext.current
-        // Оборачиваем содержимое карточки в Box, чтобы разместить отдельный элемент поверх основного контента.
         Card(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 8.dp)
-                // По клику по карточке открываем ScheduleSettingsActivity
                 .clickable {
                     val intent = Intent(context, ScheduleSettingsActivity::class.java)
                     intent.putExtra("aquariumId", aquarium.id)
@@ -250,7 +243,6 @@ class MainActivity : ComponentActivity() {
         ) {
             Box {
                 Column(modifier = Modifier.padding(16.dp)) {
-                    // Название и описание аквариума
                     Text(
                         text = aquarium.name,
                         style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)
@@ -260,7 +252,6 @@ class MainActivity : ComponentActivity() {
                         style = MaterialTheme.typography.bodyMedium
                     )
                     Spacer(modifier = Modifier.height(8.dp))
-                    // Температура и состояние света
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceBetween,
@@ -276,13 +267,11 @@ class MainActivity : ComponentActivity() {
                         )
                     }
                     Spacer(modifier = Modifier.height(4.dp))
-                    // Отформатированное время последнего кормления
                     Text(
                         text = "Last Feed: ${formatLastFeedTime(aquarium.lastFeedTime)}",
                         style = MaterialTheme.typography.bodySmall
                     )
                     Spacer(modifier = Modifier.height(12.dp))
-                    // Основные кнопки для действий: Feed, Toggle Light, Delete
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceEvenly
@@ -298,7 +287,6 @@ class MainActivity : ComponentActivity() {
                         }
                     }
                 }
-                // Маленькая кнопка "История" в правом верхнем углу
                 TextButton(
                     onClick = {
                         val intent = Intent(context, HistoryActivity::class.java)
@@ -315,7 +303,6 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    // Функция загрузки списка аквариумов
     private fun loadAquariums(
         onSuccess: (List<Aquarium>) -> Unit,
         onError: (String) -> Unit
@@ -349,10 +336,10 @@ class MainActivity : ComponentActivity() {
                 if (response.isSuccessful) {
                     showToast("Aquarium deleted")
                     loadAquariums(
-                        onSuccess = { /* обновляем список после удаления */ },
+                        onSuccess = { },
                         onError = { }
                     )
-                    recreate() // Перезагружаем активность, если необходимо
+                    recreate()
                 } else {
                     showToast("Failed to delete aquarium")
                 }
@@ -370,7 +357,7 @@ class MainActivity : ComponentActivity() {
                 if (response.isSuccessful) {
                     showToast("Feed command sent")
                     loadAquariums(
-                        onSuccess = { /* обновляем список */ },
+                        onSuccess = {},
                         onError = { }
                     )
                 } else {
@@ -390,7 +377,7 @@ class MainActivity : ComponentActivity() {
                 if (response.isSuccessful) {
                     showToast("Light command sent")
                     loadAquariums(
-                        onSuccess = { /* обновляем список */ },
+                        onSuccess = { },
                         onError = { }
                     )
                 } else {

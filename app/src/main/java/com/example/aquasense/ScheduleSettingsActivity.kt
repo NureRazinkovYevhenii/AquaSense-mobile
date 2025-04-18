@@ -42,7 +42,6 @@ class ScheduleSettingsActivity : ComponentActivity() {
             return
         }
 
-        // Загружаем текущие настройки из SharedPreferences.
         val sharedPref = getSharedPreferences("SchedulePrefs", Context.MODE_PRIVATE)
         val storedFeedInterval = sharedPref.getInt("feed_interval", 0)
         val storedLightStart = sharedPref.getString("light_start", "") ?: ""
@@ -58,7 +57,6 @@ class ScheduleSettingsActivity : ComponentActivity() {
                     scheduleFeedWorker(feedIntervalHours, aquariumId)
                     scheduleLightWorkers(lightStartTime, lightEndTime, aquariumId)
 
-                    // Сохраняем новые настройки в SharedPreferences
                     sharedPref.edit().apply {
                         putInt("feed_interval", feedIntervalHours)
                         putString("light_start", lightStartTime)
@@ -71,15 +69,11 @@ class ScheduleSettingsActivity : ComponentActivity() {
         }
     }
 
-    /**
-     * Планирование задачи кормёжки: добавляем начальную задержку, равную feedIntervalHours.
-     */
     private fun scheduleFeedWorker(feedIntervalHours: Int, aquariumId: Long) {
         val data = Data.Builder()
             .putLong("aquariumId", aquariumId)
             .build()
 
-        // Чтобы кормёжка не происходила сразу, задаём задержку, равную feedIntervalHours.
         val initialDelay = TimeUnit.HOURS.toMillis(feedIntervalHours.toLong())
         Log.d("ScheduleSettings", "Scheduling feed worker with initial delay: $initialDelay ms for aquarium $aquariumId")
 
@@ -97,17 +91,11 @@ class ScheduleSettingsActivity : ComponentActivity() {
         )
     }
 
-    /**
-     * Планирование двух задач для переключения света (начало и окончание периода).
-     */
     private fun scheduleLightWorkers(lightStartTime: String, lightEndTime: String, aquariumId: Long) {
         scheduleToggleLightWorker(lightStartTime, "ToggleLightStartWorker_$aquariumId", aquariumId)
         scheduleToggleLightWorker(lightEndTime, "ToggleLightEndWorker_$aquariumId", aquariumId)
     }
 
-    /**
-     * Планирует задачу переключения света для указанного времени.
-     */
     private fun scheduleToggleLightWorker(targetTime: String, uniqueName: String, aquariumId: Long) {
         val data = Data.Builder()
             .putLong("aquariumId", aquariumId)
@@ -130,10 +118,7 @@ class ScheduleSettingsActivity : ComponentActivity() {
             workRequest
         )
     }
-
-    /**
-     * Вычисление задержки до ближайшего наступления указанного времени (формат "HH:mm").
-     */
+    
     private fun calculateInitialDelay(targetTime: String): Long {
         return try {
             val formatter = DateTimeFormatter.ofPattern("HH:mm")

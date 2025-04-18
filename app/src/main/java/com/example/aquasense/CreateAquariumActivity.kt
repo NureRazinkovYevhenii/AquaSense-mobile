@@ -35,10 +35,8 @@ class CreateAquariumActivity : ComponentActivity() {
                         loading = true
                         errorMessage = ""
                         try {
-                            // Если поле описания пустое – передаём null
                             val request = AquariumRequest(name, description.takeIf { it.isNotBlank() })
 
-                            // Получаем ApiService с уже настроенным AuthInterceptor
                             val apiService = RetrofitClient.createService(this@CreateAquariumActivity, ApiService::class.java)
                             val response = apiService.createAquarium(request)
                             if (response.isSuccessful && response.body() != null) {
@@ -47,7 +45,7 @@ class CreateAquariumActivity : ComponentActivity() {
                                     "Aquarium created successfully",
                                     Toast.LENGTH_SHORT
                                 ).show()
-                                finish() // Завершаем активность, чтобы вернуться назад
+                                finish()
                             } else {
                                 val error = response.errorBody()?.string() ?: response.message()
                                 errorMessage = "Failed to create aquarium: $error"

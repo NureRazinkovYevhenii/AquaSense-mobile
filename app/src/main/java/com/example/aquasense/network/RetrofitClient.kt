@@ -22,9 +22,7 @@ object RetrofitClient {
                         .addInterceptor(AuthInterceptor(context.applicationContext))
                         .build()
                 )
-                // Сначала обрабатываем скалярные (текстовые) ответы
                 .addConverterFactory(ScalarsConverterFactory.create())
-                // Затем JSON-ответы с использованием Gson с включенным lenient режимом
                 .addConverterFactory(GsonConverterFactory.create(GsonBuilder().setLenient().create()))
                 .build()
                 .also { retrofit = it }

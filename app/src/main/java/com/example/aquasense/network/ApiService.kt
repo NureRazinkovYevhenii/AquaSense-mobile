@@ -10,15 +10,13 @@ import retrofit2.http.POST
 import retrofit2.http.PUT
 import retrofit2.http.Path
 
-// Модель для запроса логина
 data class LoginRequest(val username: String, val password: String)
 data class AuthRequest(val username: String, val password: String)
 
-// Модель для ответа логина (с токеном)
+
 data class LoginResponse(val token: String)
 data class AuthResponse(val token: String)
 
-// Дополнительная модель данных аквариума (если нужна)
 data class AquariumDataResponse(
     val temperature: Float,
     val waterLevel: Int,

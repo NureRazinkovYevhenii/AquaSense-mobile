@@ -93,11 +93,9 @@ fun HistoryScreen(aquariumId: Long) {
 fun computeDifferences(measurements: List<Measurement>): List<String> {
     if (measurements.isEmpty()) return emptyList()
 
-    // Сортируем по времени (предполагается, что timestamp в формате ISO_LOCAL_DATE_TIME)
     val sorted = measurements.sortedBy { it.timestamp }
 
     val differences = mutableListOf<String>()
-    // Для первой записи можно показать исходное состояние
     differences.add("${formatTimestamp(sorted.first().timestamp)} Initial state: " +
             "Temperature ${sorted.first().temperature}°C, " +
             "Light: ${if (sorted.first().lightStatus) "is on" else "is off"}")
@@ -109,7 +107,6 @@ fun computeDifferences(measurements: List<Measurement>): List<String> {
         if (cur.temperature != prev.temperature) {
             changes.add("Temperature ${cur.temperature}°C")
         }
-        // Сравнение времени кормления (если отличается — то было кормление)
         if (cur.lastFeedTime != prev.lastFeedTime) {
             changes.add("Feed")
         }
@@ -126,7 +123,7 @@ fun computeDifferences(measurements: List<Measurement>): List<String> {
 fun formatTimestamp(isoString: String): String {
     return try {
         val dt = LocalDateTime.parse(isoString, DateTimeFormatter.ISO_LOCAL_DATE_TIME)
-        dt.format(DateTimeFormatter.ofPattern("HH:mm"))
+        dt.format(DateTimeFormatter.ofPattern("dd.MM HH:mm"))
     } catch (e: Exception) {
         isoString
     }

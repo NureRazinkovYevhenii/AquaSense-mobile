@@ -25,7 +25,6 @@ class LoginActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // Проверка сохраненного токена
         val sharedPref = getSharedPreferences("AquaPrefs", Context.MODE_PRIVATE)
         val savedToken = sharedPref.getString("AUTH_TOKEN", null)
         if (savedToken != null) {
@@ -48,7 +47,6 @@ class LoginActivity : ComponentActivity() {
     private fun handleAuth(username: String, password: String, isLogin: Boolean) {
         lifecycleScope.launch {
             try {
-                // Получаем ApiService с настроенным AuthInterceptor
                 val apiService = RetrofitClient.createService(this@LoginActivity, ApiService::class.java)
                 val response = if (isLogin) {
                     Log.d("LoginActivity", "Отправка запроса на логин с username: $username")
